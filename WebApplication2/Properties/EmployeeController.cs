@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApplication2.Entities;
 using WebApplication2.Models;
-using WebApplication2.Data;
+using WebApplication2.Repositories;
 
 namespace WebApplication2.Controllers
 {
@@ -10,39 +9,40 @@ namespace WebApplication2.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IEmployeeRepository _employeeRepository;
 
-        public EmployeeController(ApplicationDbContext context)
+        // Injecting the repository into the controller via the constructor
+        public EmployeeController(IEmployeeRepository employeeRepository)
         {
-            _context = context;
+            _employeeRepository = employeeRepository;
         }
 
+        // GET api/employee
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmployeeViewModel>>> GetEmployees()
         {
-            var employees = await _context.Employees
-                .Select(e => new EmployeeViewModel
-                {
-                    Id = e.Id,
-                    Name = e.Name,
-                    Department = e.Department,
-                    Email = e.Email,
-                    OrganizationId = e.OrganizationId 
-                })
-                .ToListAsync();
+            var employees = await _employeeRepository.GetAllEmployees();
+            var employeeViewModels = employees.Select(e => new EmployeeViewModel
+            {
+                Id = e.Id,
+                Name = e.Name,
+                Department = e.Department,
+                Email = e.Email,
+                OrganizationId = e.OrganizationId
+            }).ToList();
 
-            return Ok(employees);
+            return Ok(employeeViewModels);
         }
 
+        // GET api/employee/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<EmployeeViewModel>> GetEmployee(int id)
         {
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(e => e.Id == id);
+            var employee = await _employeeRepository.GetEmployeeById(id);
 
             if (employee == null)
             {
-                return NotFound(new { message = $"Employee with ID {id} not found." });
+                return NotFound($"Employee with ID {id} not found.");
             }
 
             var employeeViewModel = new EmployeeViewModel
@@ -51,13 +51,13 @@ namespace WebApplication2.Controllers
                 Name = employee.Name,
                 Department = employee.Department,
                 Email = employee.Email,
-                OrganizationId = employee.OrganizationId 
+                OrganizationId = employee.OrganizationId
             };
 
             return Ok(employeeViewModel);
         }
 
-       
+        // POST api/employee
         [HttpPost]
         public async Task<IActionResult> CreateEmployee([FromBody] EmployeeViewModel employeeViewModel)
         {
@@ -65,6 +65,7 @@ namespace WebApplication2.Controllers
             {
                 return BadRequest(new { message = "Employee view model is required" });
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -78,40 +79,47 @@ namespace WebApplication2.Controllers
                 OrganizationId = employeeViewModel.OrganizationId
             };
 
-            _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
+            await _employeeRepository.AddEmployee(employee);
 
-            return Ok(employee);
+            return CreatedAtAction(nameof(GetEmployee), new { id = employee.Id }, employee);
         }
+
+        // PUT api/employee/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, EmployeeViewModel employeeViewModel)
         {
-            if (id != employeeViewModel.Id) return BadRequest();
+            if (id != employeeViewModel.Id)
+            {
+                return BadRequest("Employee ID mismatch.");
+            }
 
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null) return NotFound(new { message = $"Employee with ID {id} not found." });
+            var employee = await _employeeRepository.GetEmployeeById(id);
+            if (employee == null)
+            {
+                return NotFound($"Employee with ID {id} not found.");
+            }
 
             employee.Name = employeeViewModel.Name;
             employee.Department = employeeViewModel.Department;
             employee.Email = employeeViewModel.Email;
-            employee.OrganizationId = employeeViewModel.OrganizationId; 
+            employee.OrganizationId = employeeViewModel.OrganizationId;
 
-            _context.Entry(employee).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            await _employeeRepository.UpdateEmployee(employee);
 
             return NoContent();
         }
 
-     
+        // DELETE api/employee/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null) return NotFound(new { message = $"Employee with ID {id} not found." });
-            
+            var employee = await _employeeRepository.GetEmployeeById(id);
+            if (employee == null)
+            {
+                return NotFound($"Employee with ID {id} not found.");
+            }
 
-            _context.Employees.Remove(employee);
-            await _context.SaveChangesAsync();
+            await _employeeRepository.DeleteEmployee(id);
 
             return NoContent();
         }

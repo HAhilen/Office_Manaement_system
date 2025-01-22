@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApplication2.Entities;
 using WebApplication2.Models;
-using WebApplication2.Data;
+using WebApplication2.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace WebApplication2.Controllers
 {
@@ -10,40 +12,45 @@ namespace WebApplication2.Controllers
     [ApiController]
     public class OrganizationController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IOrganizationRepository _organizationRepository;
 
-        public OrganizationController(ApplicationDbContext context)
+        public OrganizationController(IOrganizationRepository organizationRepository)
         {
-            _context = context;
+            _organizationRepository = organizationRepository;
         }
+
+        // GET: api/Organization
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrganizationViewModel>>> GetOrganizations()
         {
-            var organizations = await _context.Organizations
-                .Select(o => new OrganizationViewModel
-                {
-                    Id = o.Id,
-                    OrganizationName = o.OrganizationName,
-                    Address = o.Address,
-                    PhoneNumber = o.PhoneNumber,
-                    Email = o.Email,
-                    Website = o.Website
-                })
-                .ToListAsync();
+            var organizations = await _organizationRepository.GetAllOrganizations();
+            var organizationViewModels = new List<OrganizationViewModel>();
 
-            return Ok(organizations);
+            foreach (var organization in organizations)
+            {
+                organizationViewModels.Add(new OrganizationViewModel
+                {
+                    Id = organization.Id,
+                    OrganizationName = organization.OrganizationName,
+                    Address = organization.Address,
+                    PhoneNumber = organization.PhoneNumber,
+                    Email = organization.Email,
+                    Website = organization.Website
+                });
+            }
+
+            return Ok(organizationViewModels);
         }
 
-        
+        // GET: api/Organization/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<OrganizationViewModel>> GetOrganization(int id)
         {
-            var organization = await _context.Organizations
-                .FirstOrDefaultAsync(o => o.Id == id);
+            var organization = await _organizationRepository.GetOrganizationById(id);
 
             if (organization == null)
             {
-                return NotFound(new { message = $"Organization with the  ID {id} not found" });
+                return NotFound($"Organization with ID {id} not found.");
             }
 
             var organizationViewModel = new OrganizationViewModel
@@ -59,10 +66,15 @@ namespace WebApplication2.Controllers
             return Ok(organizationViewModel);
         }
 
-       
+        // POST: api/Organization
         [HttpPost]
         public async Task<ActionResult<OrganizationViewModel>> CreateOrganization(OrganizationViewModel organizationViewModel)
         {
+            if (organizationViewModel == null)
+            {
+                return BadRequest("Organization view model is required.");
+            }
+
             var organization = new Organization
             {
                 OrganizationName = organizationViewModel.OrganizationName,
@@ -72,45 +84,48 @@ namespace WebApplication2.Controllers
                 Website = organizationViewModel.Website
             };
 
-            _context.Organizations.Add(organization);
-            await _context.SaveChangesAsync();
-
+            await _organizationRepository.AddOrganization(organization);
             organizationViewModel.Id = organization.Id;
 
             return CreatedAtAction(nameof(GetOrganization), new { id = organizationViewModel.Id }, organizationViewModel);
         }
 
-       
+        // PUT: api/Organization/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrganization(int id, OrganizationViewModel organizationViewModel)
         {
-            if (id != organizationViewModel.Id) return BadRequest();
+            if (id != organizationViewModel.Id)
+            {
+                return BadRequest("Organization ID mismatch.");
+            }
 
-            var organization = await _context.Organizations.FindAsync(id);
-            if (organization == null) return NotFound(new { message =$"Organization with the  ID {id} not found" });
+            var existingOrganization = await _organizationRepository.GetOrganizationById(id);
+            if (existingOrganization == null)
+            {
+                return NotFound($"Organization with ID {id} not found.");
+            }
 
-            organization.OrganizationName = organizationViewModel.OrganizationName;
-            organization.Address = organizationViewModel.Address;
-            organization.PhoneNumber = organizationViewModel.PhoneNumber;
-            organization.Email = organizationViewModel.Email;
-            organization.Website = organizationViewModel.Website;
+            existingOrganization.OrganizationName = organizationViewModel.OrganizationName;
+            existingOrganization.Address = organizationViewModel.Address;
+            existingOrganization.PhoneNumber = organizationViewModel.PhoneNumber;
+            existingOrganization.Email = organizationViewModel.Email;
+            existingOrganization.Website = organizationViewModel.Website;
 
-            _context.Entry(organization).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
+            await _organizationRepository.UpdateOrganization(existingOrganization);
             return NoContent();
         }
 
-        // Delete an organization
+        // DELETE: api/Organization/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrganization(int id)
         {
-            var organization = await _context.Organizations.FindAsync(id);
-            if (organization == null) return NotFound(new{ message = $"Organization  with ID {id} not found." });
+            var organization = await _organizationRepository.GetOrganizationById(id);
+            if (organization == null)
+            {
+                return NotFound($"Organization with ID {id} not found.");
+            }
 
-            _context.Organizations.Remove(organization);
-            await _context.SaveChangesAsync();
-
+            await _organizationRepository.DeleteOrganization(id);
             return NoContent();
         }
     }
