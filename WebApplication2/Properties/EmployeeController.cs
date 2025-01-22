@@ -27,7 +27,7 @@ namespace WebApplication2.Controllers
                     Name = e.Name,
                     Department = e.Department,
                     Email = e.Email,
-                    OrganizationId=e.OrganizationId
+                    OrganizationId = e.OrganizationId 
                 })
                 .ToListAsync();
 
@@ -38,41 +38,50 @@ namespace WebApplication2.Controllers
         public async Task<ActionResult<EmployeeViewModel>> GetEmployee(int id)
         {
             var employee = await _context.Employees
-                .Where(e => e.Id == id)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(e => e.Id == id);
+
             if (employee == null)
             {
-                return NotFound();
+                return NotFound(new { message = $"Employee with ID {id} not found." });
             }
+
             var employeeViewModel = new EmployeeViewModel
             {
                 Id = employee.Id,
                 Name = employee.Name,
                 Department = employee.Department,
                 Email = employee.Email,
-                OrganizationId=employee.OrganizationId
+                OrganizationId = employee.OrganizationId 
             };
 
             return Ok(employeeViewModel);
         }
 
+       
         [HttpPost]
-        public async Task<ActionResult<EmployeeViewModel>> CreateEmployee(EmployeeViewModel employeeViewModel)
+        public async Task<IActionResult> CreateEmployee([FromBody] EmployeeViewModel employeeViewModel)
         {
+            if (employeeViewModel == null)
+            {
+                return BadRequest(new { message = "Employee view model is required" });
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var employee = new Employee
             {
                 Name = employeeViewModel.Name,
                 Department = employeeViewModel.Department,
                 Email = employeeViewModel.Email,
-                OrganizationId=employeeViewModel.OrganizationId
+                OrganizationId = employeeViewModel.OrganizationId
             };
 
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
 
-            employeeViewModel.Id = employee.Id;
-
-            return CreatedAtAction(nameof(GetEmployee), new { id = employeeViewModel.Id }, employeeViewModel);
+            return Ok(employee);
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, EmployeeViewModel employeeViewModel)
@@ -80,12 +89,12 @@ namespace WebApplication2.Controllers
             if (id != employeeViewModel.Id) return BadRequest();
 
             var employee = await _context.Employees.FindAsync(id);
-            if (employee == null) return NotFound();
+            if (employee == null) return NotFound(new { message = $"Employee with ID {id} not found." });
 
             employee.Name = employeeViewModel.Name;
             employee.Department = employeeViewModel.Department;
             employee.Email = employeeViewModel.Email;
-            employee.OrganizationId = employeeViewModel.OrganizationId;
+            employee.OrganizationId = employeeViewModel.OrganizationId; 
 
             _context.Entry(employee).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -93,11 +102,13 @@ namespace WebApplication2.Controllers
             return NoContent();
         }
 
+     
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
-            if (employee == null) return NotFound();
+            if (employee == null) return NotFound(new { message = $"Employee with ID {id} not found." });
+            
 
             _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();

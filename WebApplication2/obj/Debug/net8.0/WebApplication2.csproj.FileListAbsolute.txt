@@ -135,3 +135,4 @@
 /Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/obj/Debug/net8.0/WebApplication2.pdb
 /Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/obj/Debug/net8.0/WebApplication2.genruntimeconfig.cache
 /Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/obj/Debug/net8.0/ref/WebApplication2.dll
+/Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/obj/Debug/net8.0/WebApplication2.sourcelink.json
