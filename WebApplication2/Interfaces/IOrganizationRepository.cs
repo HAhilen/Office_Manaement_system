@@ -6,6 +6,7 @@ namespace WebApplication2.Repositories
     {
         Task<IEnumerable<Organization>> GetAllOrganizations();
         Task<Organization> GetOrganizationById(int id);
+        Task<IEnumerable<Organization>> GetOrganizationsWithEmployees(); 
         Task AddOrganization(Organization organization);
         Task UpdateOrganization(Organization organization);
         Task DeleteOrganization(int id);

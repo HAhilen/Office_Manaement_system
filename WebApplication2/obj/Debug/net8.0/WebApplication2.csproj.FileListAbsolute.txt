@@ -136,3 +136,5 @@
 /Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/obj/Debug/net8.0/WebApplication2.genruntimeconfig.cache
 /Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/obj/Debug/net8.0/ref/WebApplication2.dll
 /Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/obj/Debug/net8.0/WebApplication2.sourcelink.json
+/Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/bin/Debug/net8.0/Castle.Core.dll
+/Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/bin/Debug/net8.0/Microsoft.EntityFrameworkCore.Proxies.dll

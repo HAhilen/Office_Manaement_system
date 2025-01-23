@@ -11,7 +11,7 @@ namespace WebApplication2.Models
         public string? Email { get; set; }
         public string? Website { get; set; }
         
-        public virtual ICollection<Employee> Employees { get; set; }   
+         
         
         
     }

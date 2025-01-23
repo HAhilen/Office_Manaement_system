@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Entities;
 using WebApplication2.Models;
 using WebApplication2.Repositories;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace WebApplication2.Controllers
 {
@@ -21,14 +24,32 @@ namespace WebApplication2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmployeeViewModel>>> GetEmployees()
         {
+            
+            // Fetch the employees from the repository
             var employees = await _employeeRepository.GetAllEmployees();
+
+            
+            if (employees == null || !employees.Any())
+            {
+                return NotFound("No employees found.");
+            }
+
             var employeeViewModels = employees.Select(e => new EmployeeViewModel
             {
                 Id = e.Id,
                 Name = e.Name,
                 Department = e.Department,
                 Email = e.Email,
-                OrganizationId = e.OrganizationId
+                OrganizationId = e.OrganizationId, 
+                Organization = e.Organization != null ? new OrganizationViewModel
+                {
+                    Id = e.Organization.Id,
+                    OrganizationName = e.Organization.OrganizationName,
+                    Address = e.Organization.Address,
+                    PhoneNumber = e.Organization.PhoneNumber,
+                    Email = e.Organization.Email,
+                    Website = e.Organization.Website
+                } : null 
             }).ToList();
 
             return Ok(employeeViewModels);
@@ -51,7 +72,16 @@ namespace WebApplication2.Controllers
                 Name = employee.Name,
                 Department = employee.Department,
                 Email = employee.Email,
-                OrganizationId = employee.OrganizationId
+                OrganizationId = employee.OrganizationId,
+                Organization = employee.Organization != null ? new OrganizationViewModel
+                {
+                    Id = employee.Organization.Id,
+                    OrganizationName = employee.Organization.OrganizationName,
+                    Address = employee.Organization.Address,
+                    PhoneNumber = employee.Organization.PhoneNumber,
+                    Email = employee.Organization.Email,
+                    Website = employee.Organization.Website
+                } : null
             };
 
             return Ok(employeeViewModel);
