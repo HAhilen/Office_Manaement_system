@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
 using WebApplication2.Entities;
+using WebApplication2.Models;
 
 namespace WebApplication2.Repositories
 {
@@ -12,45 +13,73 @@ namespace WebApplication2.Repositories
         {
             _context = context;
         }
-
-        public async Task<IEnumerable<Employee>> GetAllEmployees()
+        public async Task<IEnumerable<EmployeeViewModel>> GetAllEmployees()
         {
-            return await _context.Employees
-                .Include(e => e.Organization)  
+            var employees = await _context.Employees
+                .Select(x => new EmployeeViewModel
+                {
+                    Id = x.Id,
+                    Email = x.Email,
+                    Name = x.Name,
+                    Department = x.Department,
+                    OrganizationId = x.OrganizationId,
+                })
                 .ToListAsync();
-        }
 
-    
-        public async Task<Employee> GetEmployeeById(int id)
-        {
-            return await _context.Employees
-                .Include(e => e.Organization) 
-                .FirstOrDefaultAsync(e => e.Id == id);
+            return employees;
         }
-
-        // Get employees by organizationId, including organization details
-        public async Task<IEnumerable<Employee>> GetEmployeesWithOrganization(int organizationId)
-        {
-            return await _context.Employees
-                .Where(e => e.OrganizationId == organizationId)  
-                .Include(e => e.Organization)  
-                .ToListAsync();
-        }
-
+ 
+        
        
-        public async Task AddEmployee(Employee employee)
+          // Get a single employee by ID and return the view model
+        public async Task<EmployeeViewModel> GetEmployeeById(int id)
         {
-            var organization = await _context.Organizations.FindAsync(employee.OrganizationId);
-            if (organization == null)
+            var employee = await _context.Employees
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (employee == null)
             {
-                throw new ArgumentException($"The specified organization with ID {employee.OrganizationId} does not exist.");
+                return null; // or throw exception if required
             }
 
+            return new EmployeeViewModel
+            {
+                Id = employee.Id,
+                Name = employee.Name,
+                Department = employee.Department,
+                Email = employee.Email,
+                OrganizationId = employee.OrganizationId,
+              
+            };
+        }
+
+        // Get employees by organizationId and return the view model
+        // public async Task<IEnumerable<EmployeeWithOrganizationViewModel>> GetEmployeesWithOrganization(int organizationId)
+        // {
+        //     var employees = await _context.Employees
+        //         .Where(e => e.OrganizationId == organizationId)
+        //         .ToListAsync();
+        //
+        //     return employees.Select(e => new EmployeeWithOrganizationViewModel
+        //     {
+        //         EmpId = e.Id,
+        //         EmpName = e.Name,
+        //         Department = e.Department,
+        //         Email = e.Email,
+        //         OrganizationId = e.OrganizationId,
+        //         OrganizationName =e.Organization.OrganizationName,
+        //         Address = e.Organization.Address,
+        //         
+        //     });
+        // }
+
+        // Add a new employee
+        public async Task AddEmployee(Employee employee)
+        {
             await _context.Employees.AddAsync(employee);
             await _context.SaveChangesAsync();
         }
 
-       
         public async Task UpdateEmployee(Employee employee)
         {
             var existingEmployee = await _context.Employees.FindAsync(employee.Id);
@@ -64,10 +93,8 @@ namespace WebApplication2.Repositories
             existingEmployee.Department = employee.Department;
             existingEmployee.Email = employee.Email;
             existingEmployee.OrganizationId = employee.OrganizationId;
-
-           
-            var organization = await _context.Organizations.FindAsync(employee.OrganizationId);
-            if (organization == null)
+            var organizationExists = await _context.Organizations.AnyAsync(o => o.Id == employee.OrganizationId);
+            if (!organizationExists)
             {
                 throw new ArgumentException($"The specified organization with ID {employee.OrganizationId} does not exist.");
             }
@@ -75,15 +102,18 @@ namespace WebApplication2.Repositories
             await _context.SaveChangesAsync();
         }
 
-        
+        // Delete an employee by ID
         public async Task DeleteEmployee(int id)
         {
             var employee = await GetEmployeeById(id);
-            if (employee != null)
+            if (employee == null)
             {
-                _context.Employees.Remove(employee);
-                await _context.SaveChangesAsync();
+                throw new ArgumentException("Employee not found.");
             }
+
+            var entityToRemove = await _context.Employees.FindAsync(id);
+            _context.Employees.Remove(entityToRemove);
+            await _context.SaveChangesAsync();
         }
     }
 }

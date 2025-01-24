@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
 using WebApplication2.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using WebApplication2.Models;
 
 namespace WebApplication2.Repositories
 {
@@ -15,26 +14,59 @@ namespace WebApplication2.Repositories
             _context = context;
         }
 
-        // Get all organizations (no need to include employees anymore)
-        public async Task<IEnumerable<Organization>> GetAllOrganizations()
+        // Get all organizations
+        public async Task<IEnumerable<OrganizationViewModel>> GetAllOrganizations()
         {
-            return await _context.Organizations.ToListAsync();
-        }
-
-        // Get an organization by ID (no need to include employees)
-        public async Task<Organization> GetOrganizationById(int id)
-        {
-            return await _context.Organizations
-                .FirstOrDefaultAsync(o => o.Id == id);
-        }
-
-        // Get organizations with employees (no need to include employees anymore)
-        public async Task<IEnumerable<Organization>> GetOrganizationsWithEmployees()
-        {
-            return await _context.Organizations
+            var organizations = await _context.Organizations
+                .Select(o => new OrganizationViewModel
+                {
+                    Id = o.Id,
+                    OrganizationName = o.OrganizationName,
+                    Address = o.Address,
+                    PhoneNumber = o.PhoneNumber,
+                    Email = o.Email,
+                    Website = o.Website
+                })
                 .ToListAsync();
+
+            return organizations;
         }
 
+        // Get a single organization by ID
+        public async Task<OrganizationViewModel> GetOrganizationById(int id)
+        {
+            var organization = await _context.Organizations
+                .Where(o => o.Id == id)
+                .Select(o => new OrganizationViewModel
+                {
+                    Id = o.Id,
+                    OrganizationName = o.OrganizationName,
+                    Address = o.Address,
+                    PhoneNumber = o.PhoneNumber,
+                    Email = o.Email,
+                    Website = o.Website
+                })
+                .FirstOrDefaultAsync();
+
+            return organization;
+        }
+        public async Task<IEnumerable<OrganizationViewModel>> GetOrganizationsWithEmployees()
+        {
+            var organizations = await _context.Organizations
+                .Select(o => new OrganizationViewModel
+                {
+                    Id = o.Id,
+                    OrganizationName = o.OrganizationName,
+                    Address = o.Address,
+                    PhoneNumber = o.PhoneNumber,
+                    Email = o.Email,
+                    Website = o.Website
+                })
+                .ToListAsync();
+
+            return organizations;
+        }
+ 
         // Add a new organization
         public async Task AddOrganization(Organization organization)
         {
@@ -49,10 +81,12 @@ namespace WebApplication2.Repositories
             await _context.SaveChangesAsync();
         }
 
-        // Delete an organization
+        // Delete an organization by ID
         public async Task DeleteOrganization(int id)
         {
-            var organization = await GetOrganizationById(id);
+            var organization = await _context.Organizations
+                .FirstOrDefaultAsync(o => o.Id == id);
+
             if (organization != null)
             {
                 _context.Organizations.Remove(organization);

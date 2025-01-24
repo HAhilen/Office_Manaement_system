@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Entities;
 using WebApplication2.Models;
-using WebApplication2.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
+
 
 namespace WebApplication2.Controllers
 {
@@ -90,10 +88,14 @@ namespace WebApplication2.Controllers
             return CreatedAtAction(nameof(GetOrganization), new { id = organizationViewModel.Id }, organizationViewModel);
         }
 
-        // PUT: api/Organization/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrganization(int id, OrganizationViewModel organizationViewModel)
+        public async Task<IActionResult> UpdateOrganization(int id, [FromBody] OrganizationViewModel organizationViewModel)
         {
+            if (organizationViewModel == null)
+            {
+                return BadRequest("Organization view model cannot be null.");
+            }
+
             if (id != organizationViewModel.Id)
             {
                 return BadRequest("Organization ID mismatch.");
@@ -105,15 +107,22 @@ namespace WebApplication2.Controllers
                 return NotFound($"Organization with ID {id} not found.");
             }
 
-            existingOrganization.OrganizationName = organizationViewModel.OrganizationName;
-            existingOrganization.Address = organizationViewModel.Address;
-            existingOrganization.PhoneNumber = organizationViewModel.PhoneNumber;
-            existingOrganization.Email = organizationViewModel.Email;
-            existingOrganization.Website = organizationViewModel.Website;
+           
+            var organizationEntity = new Organization
+            {
+                Id = organizationViewModel.Id,
+                OrganizationName = organizationViewModel.OrganizationName,
+                Address = organizationViewModel.Address,
+                PhoneNumber = organizationViewModel.PhoneNumber,
+                Email = organizationViewModel.Email,
+                Website = organizationViewModel.Website
+            };
 
-            await _organizationRepository.UpdateOrganization(existingOrganization);
-            return NoContent();
+            await _organizationRepository.UpdateOrganization(organizationEntity);
+
+            return NoContent(); 
         }
+ 
 
         // DELETE: api/Organization/{id}
         [HttpDelete("{id}")]

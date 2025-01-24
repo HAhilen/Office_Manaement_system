@@ -24,18 +24,15 @@ namespace WebApplication2.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            
+           
             modelBuilder.Entity<Employee>()
-                .HasOne(e => e.Organization) 
+                .HasOne<Organization>()  
                 .WithMany() 
                 .HasForeignKey(e => e.OrganizationId) 
-                .OnDelete(DeleteBehavior.Cascade); 
-
-           
+                .OnDelete(DeleteBehavior.SetNull); 
             modelBuilder.Entity<Organization>()
                 .HasKey(o => o.Id);
 
-            
             modelBuilder.Entity<Employee>()
                 .HasKey(e => e.Id);
         }

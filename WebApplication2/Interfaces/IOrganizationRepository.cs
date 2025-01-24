@@ -1,15 +1,11 @@
 using WebApplication2.Entities;
-
-namespace WebApplication2.Repositories
+using WebApplication2.Models;
+public interface IOrganizationRepository
 {
-    public interface IOrganizationRepository
-    {
-        Task<IEnumerable<Organization>> GetAllOrganizations();
-        Task<Organization> GetOrganizationById(int id);
-        Task<IEnumerable<Organization>> GetOrganizationsWithEmployees(); 
-        Task AddOrganization(Organization organization);
-        Task UpdateOrganization(Organization organization);
-        Task DeleteOrganization(int id);
-    }
+    Task<IEnumerable<OrganizationViewModel>> GetAllOrganizations();
+    Task<OrganizationViewModel> GetOrganizationById(int id);
+    Task<IEnumerable<OrganizationViewModel>> GetOrganizationsWithEmployees();
+    Task AddOrganization(Organization organization);
+    Task UpdateOrganization(Organization organization);
+    Task DeleteOrganization(int id);
 }
-
