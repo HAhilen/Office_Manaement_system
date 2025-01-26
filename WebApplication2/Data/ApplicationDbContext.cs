@@ -27,11 +27,12 @@ namespace WebApplication2.Data
            
             modelBuilder.Entity<Employee>()
                 .HasOne<Organization>()  
-                .WithMany() 
+                .WithMany(x=>x.Employees) 
                 .HasForeignKey(e => e.OrganizationId) 
                 .OnDelete(DeleteBehavior.SetNull); 
             modelBuilder.Entity<Organization>()
-                .HasKey(o => o.Id);
+                .HasKey(x=>x.Id)  ;
+            modelBuilder.Entity<Organization>().HasMany(x=>x.Employees).WithOne(x=>x.Organization).HasForeignKey(x=>x.OrganizationId);
 
             modelBuilder.Entity<Employee>()
                 .HasKey(e => e.Id);

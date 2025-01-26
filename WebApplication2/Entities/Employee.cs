@@ -8,6 +8,6 @@ namespace WebApplication2.Entities
         public string? Email { get; set; }
         public int? OrganizationId { get; set; }
         
-        // public virtual Organization? Organization { get; set; }
+        public virtual Organization Organization { get; set; }
     }
 }

@@ -9,6 +9,6 @@ namespace WebApplication2.Entities
         public string? Email { get; set; }
         public string? Website { get; set; }
 
-      
+     public virtual ICollection<Employee> Employees { get; set; }  
     }
 }

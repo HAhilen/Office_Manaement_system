@@ -23,7 +23,9 @@ namespace WebApplication2.Repositories
                     Name = e.Name,
                     Department = e.Department,
                     Email = e.Email,
-                    OrganizationId = e.OrganizationId
+                    OrganizationId = e.OrganizationId,
+                    OrganizationName = e.Organization.OrganizationName??""
+                    
                 })
                 .ToListAsync();
         }

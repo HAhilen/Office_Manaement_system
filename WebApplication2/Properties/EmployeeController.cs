@@ -27,7 +27,7 @@ namespace WebApplication2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateEmployee([FromBody] EmployeeViewModel employeeViewModel)
+        public async Task<IActionResult> CreateEmployee( EmployeeViewModel employeeViewModel)
         {
             var result = await _employeeRepository.AddEmployee(employeeViewModel);
             return result == null ? BadRequest() : CreatedAtAction(nameof(GetEmployee), new { id = result.Id }, result);

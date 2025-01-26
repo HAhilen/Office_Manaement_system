@@ -6,6 +6,7 @@ public class EmployeeViewModel
     public string? Department { get; set; }
     public string? Email { get; set; }
     public int? OrganizationId { get; set; }
+    public string? OrganizationName { get; set; }
     
 }
 
