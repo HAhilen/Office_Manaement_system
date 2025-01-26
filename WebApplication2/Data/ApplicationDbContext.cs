@@ -10,6 +10,7 @@ namespace WebApplication2.Data
         }
 
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Department> Departments { get; set; }
         public DbSet<Organization> Organizations { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -36,6 +37,8 @@ namespace WebApplication2.Data
 
             modelBuilder.Entity<Employee>()
                 .HasKey(e => e.Id);
+
+            modelBuilder.Entity<Department>();
         }
     }
 }

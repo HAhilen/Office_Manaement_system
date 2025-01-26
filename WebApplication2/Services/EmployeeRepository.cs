@@ -21,7 +21,7 @@ namespace WebApplication2.Repositories
                 {
                     Id = e.Id,
                     Name = e.Name,
-                    Department = e.Department,
+                    DepartmentName = e.DepartmentName,
                     Email = e.Email,
                     OrganizationId = e.OrganizationId,
                     OrganizationName = e.Organization.OrganizationName??""
@@ -39,7 +39,7 @@ namespace WebApplication2.Repositories
                 {
                     Id = employee.Id,
                     Name = employee.Name,
-                    Department = employee.Department,
+                    DepartmentName = employee.DepartmentName,
                     Email = employee.Email,
                     OrganizationId = employee.OrganizationId
                 };
@@ -50,7 +50,7 @@ namespace WebApplication2.Repositories
             var employee = new Employee
             {
                 Name = employeeViewModel.Name,
-                Department = employeeViewModel.Department,
+                DepartmentName = employeeViewModel.DepartmentName,
                 Email = employeeViewModel.Email,
                 OrganizationId = employeeViewModel.OrganizationId
             };
@@ -62,7 +62,7 @@ namespace WebApplication2.Repositories
             {
                 Id = employee.Id,
                 Name = employee.Name,
-                Department = employee.Department,
+                DepartmentName = employee.DepartmentName,
                 Email = employee.Email,
                 OrganizationId = employee.OrganizationId
             };
@@ -79,7 +79,7 @@ namespace WebApplication2.Repositories
                 return false;
             }
             existingEmployee.Name = employeeViewModel.Name ?? existingEmployee.Name;
-            existingEmployee.Department = employeeViewModel.Department ?? existingEmployee.Department;
+            existingEmployee.DepartmentName = employeeViewModel.DepartmentName ?? existingEmployee.DepartmentName;
             existingEmployee.Email = employeeViewModel.Email ?? existingEmployee.Email;
             existingEmployee.OrganizationId = employeeViewModel.OrganizationId ?? existingEmployee.OrganizationId;
             _context.Employees.Update(existingEmployee);
