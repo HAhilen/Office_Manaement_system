@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApplication2.Entities;
 using WebApplication2.Models;
-
-
+using WebApplication2.Repositories;
+using WebApplication2.Data;
 
 namespace WebApplication2.Controllers
 {
@@ -17,125 +16,50 @@ namespace WebApplication2.Controllers
             _organizationRepository = organizationRepository;
         }
 
-        // GET: api/Organization
+        // Get all organizations
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrganizationViewModel>>> GetOrganizations()
+        public async Task<IActionResult> GetOrganizations()
         {
             var organizations = await _organizationRepository.GetAllOrganizations();
-            var organizationViewModels = new List<OrganizationViewModel>();
-
-            foreach (var organization in organizations)
-            {
-                organizationViewModels.Add(new OrganizationViewModel
-                {
-                    Id = organization.Id,
-                    OrganizationName = organization.OrganizationName,
-                    Address = organization.Address,
-                    PhoneNumber = organization.PhoneNumber,
-                    Email = organization.Email,
-                    Website = organization.Website
-                });
-            }
-
-            return Ok(organizationViewModels);
+            return Ok(organizations);
         }
 
-        // GET: api/Organization/{id}
+        // Get an organization by ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<OrganizationViewModel>> GetOrganization(int id)
+        public async Task<IActionResult> GetOrganization(int id)
         {
             var organization = await _organizationRepository.GetOrganizationById(id);
-
-            if (organization == null)
-            {
-                return NotFound($"Organization with ID {id} not found.");
-            }
-
-            var organizationViewModel = new OrganizationViewModel
-            {
-                Id = organization.Id,
-                OrganizationName = organization.OrganizationName,
-                Address = organization.Address,
-                PhoneNumber = organization.PhoneNumber,
-                Email = organization.Email,
-                Website = organization.Website
-            };
-
-            return Ok(organizationViewModel);
+            return organization == null ? NotFound() : Ok(organization);
         }
 
-        // POST: api/Organization
+        // Add a new organization
         [HttpPost]
-        public async Task<ActionResult<OrganizationViewModel>> CreateOrganization(OrganizationViewModel organizationViewModel)
+        public async Task<IActionResult> AddOrganization([FromBody] OrganizationViewModel organizationViewModel)
         {
             if (organizationViewModel == null)
-            {
-                return BadRequest("Organization view model is required.");
-            }
+                return BadRequest();
 
-            var organization = new Organization
-            {
-                OrganizationName = organizationViewModel.OrganizationName,
-                Address = organizationViewModel.Address,
-                PhoneNumber = organizationViewModel.PhoneNumber,
-                Email = organizationViewModel.Email,
-                Website = organizationViewModel.Website
-            };
-
-            await _organizationRepository.AddOrganization(organization);
-            organizationViewModel.Id = organization.Id;
-
+            await _organizationRepository.AddOrganization(organizationViewModel);
             return CreatedAtAction(nameof(GetOrganization), new { id = organizationViewModel.Id }, organizationViewModel);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrganization(int id, [FromBody] OrganizationViewModel organizationViewModel)
+        // Update an organization
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateOrganization( OrganizationViewModel organizationViewModel)
         {
             if (organizationViewModel == null)
-            {
-                return BadRequest("Organization view model cannot be null.");
-            }
+                return BadRequest();
 
-            if (id != organizationViewModel.Id)
-            {
-                return BadRequest("Organization ID mismatch.");
-            }
-
-            var existingOrganization = await _organizationRepository.GetOrganizationById(id);
-            if (existingOrganization == null)
-            {
-                return NotFound($"Organization with ID {id} not found.");
-            }
-
-           
-            var organizationEntity = new Organization
-            {
-                Id = organizationViewModel.Id,
-                OrganizationName = organizationViewModel.OrganizationName,
-                Address = organizationViewModel.Address,
-                PhoneNumber = organizationViewModel.PhoneNumber,
-                Email = organizationViewModel.Email,
-                Website = organizationViewModel.Website
-            };
-
-            await _organizationRepository.UpdateOrganization(organizationEntity);
-
-            return NoContent(); 
+            var updated = await _organizationRepository.UpdateOrganization(organizationViewModel);
+            return updated ? NoContent() : NotFound();
         }
- 
 
-        // DELETE: api/Organization/{id}
+        // Delete an organization
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrganization(int id)
         {
-            var organization = await _organizationRepository.GetOrganizationById(id);
-            if (organization == null)
-            {
-                return NotFound($"Organization with ID {id} not found.");
-            }
-
-            await _organizationRepository.DeleteOrganization(id);
-            return NoContent();
+            var deleted = await _organizationRepository.DeleteOrganization(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using WebApplication2.Data;
 using WebApplication2.Entities;
 using WebApplication2.Models;
+using WebApplication2.Data;
 
 namespace WebApplication2.Repositories
 {
@@ -13,34 +13,48 @@ namespace WebApplication2.Repositories
         {
             _context = context;
         }
+
         public async Task<IEnumerable<EmployeeViewModel>> GetAllEmployees()
         {
-            var employees = await _context.Employees
-                .Select(x => new EmployeeViewModel
+            return await _context.Employees
+                .Select(e => new EmployeeViewModel
                 {
-                    Id = x.Id,
-                    Email = x.Email,
-                    Name = x.Name,
-                    Department = x.Department,
-                    OrganizationId = x.OrganizationId,
+                    Id = e.Id,
+                    Name = e.Name,
+                    Department = e.Department,
+                    Email = e.Email,
+                    OrganizationId = e.OrganizationId
                 })
                 .ToListAsync();
-
-            return employees;
         }
- 
-        
-       
-          // Get a single employee by ID and return the view model
+
         public async Task<EmployeeViewModel> GetEmployeeById(int id)
         {
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(e => e.Id == id);
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
+            return employee == null
+                ? null
+                : new EmployeeViewModel
+                {
+                    Id = employee.Id,
+                    Name = employee.Name,
+                    Department = employee.Department,
+                    Email = employee.Email,
+                    OrganizationId = employee.OrganizationId
+                };
+        }
 
-            if (employee == null)
+        public async Task<EmployeeViewModel> AddEmployee(EmployeeViewModel employeeViewModel)
+        {
+            var employee = new Employee
             {
-                return null; // or throw exception if required
-            }
+                Name = employeeViewModel.Name,
+                Department = employeeViewModel.Department,
+                Email = employeeViewModel.Email,
+                OrganizationId = employeeViewModel.OrganizationId
+            };
+
+            await _context.Employees.AddAsync(employee);
+            await _context.SaveChangesAsync();
 
             return new EmployeeViewModel
             {
@@ -48,72 +62,32 @@ namespace WebApplication2.Repositories
                 Name = employee.Name,
                 Department = employee.Department,
                 Email = employee.Email,
-                OrganizationId = employee.OrganizationId,
-              
+                OrganizationId = employee.OrganizationId
             };
         }
 
-        // Get employees by organizationId and return the view model
-        // public async Task<IEnumerable<EmployeeWithOrganizationViewModel>> GetEmployeesWithOrganization(int organizationId)
-        // {
-        //     var employees = await _context.Employees
-        //         .Where(e => e.OrganizationId == organizationId)
-        //         .ToListAsync();
-        //
-        //     return employees.Select(e => new EmployeeWithOrganizationViewModel
-        //     {
-        //         EmpId = e.Id,
-        //         EmpName = e.Name,
-        //         Department = e.Department,
-        //         Email = e.Email,
-        //         OrganizationId = e.OrganizationId,
-        //         OrganizationName =e.Organization.OrganizationName,
-        //         Address = e.Organization.Address,
-        //         
-        //     });
-        // }
-
-        // Add a new employee
-        public async Task AddEmployee(Employee employee)
+        public async Task<bool> UpdateEmployee(int id, EmployeeViewModel employeeViewModel)
         {
-            await _context.Employees.AddAsync(employee);
+            var existingEmployee = await _context.Employees.FindAsync(id);
+            if (existingEmployee == null) return false;
+
+            existingEmployee.Name = employeeViewModel.Name;
+            existingEmployee.Department = employeeViewModel.Department;
+            existingEmployee.Email = employeeViewModel.Email;
+            existingEmployee.OrganizationId = employeeViewModel.OrganizationId;
+
             await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task UpdateEmployee(Employee employee)
+        public async Task<bool> DeleteEmployee(int id)
         {
-            var existingEmployee = await _context.Employees.FindAsync(employee.Id);
-            if (existingEmployee == null)
-            {
-                throw new ArgumentException("Employee not found.");
-            }
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee == null) return false;
 
-            
-            existingEmployee.Name = employee.Name;
-            existingEmployee.Department = employee.Department;
-            existingEmployee.Email = employee.Email;
-            existingEmployee.OrganizationId = employee.OrganizationId;
-            var organizationExists = await _context.Organizations.AnyAsync(o => o.Id == employee.OrganizationId);
-            if (!organizationExists)
-            {
-                throw new ArgumentException($"The specified organization with ID {employee.OrganizationId} does not exist.");
-            }
-
+            _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();
-        }
-
-        // Delete an employee by ID
-        public async Task DeleteEmployee(int id)
-        {
-            var employee = await GetEmployeeById(id);
-            if (employee == null)
-            {
-                throw new ArgumentException("Employee not found.");
-            }
-
-            var entityToRemove = await _context.Employees.FindAsync(id);
-            _context.Employees.Remove(entityToRemove);
-            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
