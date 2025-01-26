@@ -68,20 +68,20 @@ namespace WebApplication2.Repositories
         // Update an existing organization
         public async Task<bool> UpdateOrganization(OrganizationViewModel organizationViewModel)
         {
-            var organization = await _context.Organizations.FirstOrDefaultAsync(o => o.Id == organizationViewModel.Id);
+            var existingorganization = await _context.Organizations.FirstOrDefaultAsync(o => o.Id == organizationViewModel.Id);
 
-            if (organization == null)
+            if (existingorganization == null)
             {
                 return false;
             }
 
-            organization.OrganizationName = organizationViewModel.OrganizationName;
-            organization.Address = organizationViewModel.Address;
-            organization.PhoneNumber = organizationViewModel.PhoneNumber;
-            organization.Email = organizationViewModel.Email;
-            organization.Website = organizationViewModel.Website;
+            existingorganization.OrganizationName = organizationViewModel.OrganizationName??existingorganization.OrganizationName;
+            existingorganization.Address = organizationViewModel.Address??existingorganization.Address;
+            existingorganization.PhoneNumber = organizationViewModel.PhoneNumber??existingorganization.PhoneNumber;
+            existingorganization.Email = organizationViewModel.Email??existingorganization.Email;
+            existingorganization.Website = organizationViewModel.Website??existingorganization.Website;
 
-            _context.Organizations.Update(organization);
+            _context.Organizations.Update(existingorganization);
             await _context.SaveChangesAsync();
 
             return true;

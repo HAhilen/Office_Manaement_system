@@ -8,8 +8,8 @@ namespace WebApplication2.Repositories
         Task<IEnumerable<EmployeeViewModel>> GetAllEmployees();
         Task<EmployeeViewModel> GetEmployeeById(int id);
         // Task<IEnumerable<EmployeeWithOrganizationViewModel>> GetEmployeesWithOrganization(int organizationId);
-        Task<EmployeeViewModel> AddEmployee(EmployeeViewModel employeeViewModel); // Return created employee
-        Task<bool> UpdateEmployee(int id, EmployeeViewModel employeeViewModel);   
-        Task<bool> DeleteEmployee(int id);                                       // Return success status
+        Task<EmployeeViewModel> AddEmployee(EmployeeViewModel employeeViewModel); 
+        Task<bool> UpdateEmployee(EmployeeViewModel employeeViewModel);   
+        Task<bool> DeleteEmployee(int id);                                      
     }
 }

@@ -66,20 +66,27 @@ namespace WebApplication2.Repositories
             };
         }
 
-        public async Task<bool> UpdateEmployee(int id, EmployeeViewModel employeeViewModel)
+    // Update operation for employees
+        public async Task<bool> UpdateEmployee(EmployeeViewModel employeeViewModel)
         {
-            var existingEmployee = await _context.Employees.FindAsync(id);
-            if (existingEmployee == null) return false;
+            var existingEmployee = await _context.Employees
+                .FirstOrDefaultAsync(e => e.Id == employeeViewModel.Id);
 
-            existingEmployee.Name = employeeViewModel.Name;
-            existingEmployee.Department = employeeViewModel.Department;
-            existingEmployee.Email = employeeViewModel.Email;
-            existingEmployee.OrganizationId = employeeViewModel.OrganizationId;
-
+            if (existingEmployee == null)
+            {
+                return false;
+            }
+            existingEmployee.Name = employeeViewModel.Name ?? existingEmployee.Name;
+            existingEmployee.Department = employeeViewModel.Department ?? existingEmployee.Department;
+            existingEmployee.Email = employeeViewModel.Email ?? existingEmployee.Email;
+            existingEmployee.OrganizationId = employeeViewModel.OrganizationId ?? existingEmployee.OrganizationId;
+            _context.Employees.Update(existingEmployee);
             await _context.SaveChangesAsync();
+
             return true;
         }
-
+    //Delete opetation for Employees
+    
         public async Task<bool> DeleteEmployee(int id)
         {
             var employee = await _context.Employees.FindAsync(id);

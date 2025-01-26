@@ -33,10 +33,10 @@ namespace WebApplication2.Controllers
             return result == null ? BadRequest() : CreatedAtAction(nameof(GetEmployee), new { id = result.Id }, result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEmployee(int id, [FromBody] EmployeeViewModel employeeViewModel)
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateEmployee(EmployeeViewModel employeeViewModel)
         {
-            var isUpdated = await _employeeRepository.UpdateEmployee(id, employeeViewModel);
+            var isUpdated = await _employeeRepository.UpdateEmployee(employeeViewModel);
             return isUpdated ? NoContent() : NotFound();
         }
 
