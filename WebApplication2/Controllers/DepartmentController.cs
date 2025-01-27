@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Models;
-using WebApplication2.Repositories;
+using WebApplication2.Interfaces;
 
 namespace WebApplication2.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Department")]
     [ApiController]
     public class DepartmentController : ControllerBase
     {

@@ -2,8 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using WebApplication2.Entities;
 using WebApplication2.Models;
 using WebApplication2.Data;
+using WebApplication2.Interfaces;
 
-namespace WebApplication2.Repositories
+namespace WebApplication2.Services
 {
     public class DepartmentRepository : IDepartmentRepository
     {
@@ -25,7 +26,7 @@ namespace WebApplication2.Repositories
                 })
                 .ToListAsync();
         }
-
+      //  Get Department by id 
         public async Task<DepartmentViewModel> GetDepartmentById(int id)
         {
             var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == id);
@@ -38,8 +39,8 @@ namespace WebApplication2.Repositories
                     DepartmentName = department.DepartmentName,
                 };
         }
-
-        
+      
+      // Post operation for department  
         public async Task<DepartmentViewModel> AddDepartment(DepartmentViewModel departmentViewModel)
         {
             var department = new Department
@@ -61,7 +62,7 @@ namespace WebApplication2.Repositories
             };
         }
 
-    // Update operation for department
+    // Update operation for department by id 
         public async Task<bool> UpdateDepartment(DepartmentViewModel departmentViewModel)
         {
             var existingDepartment = await _context.Departments
