@@ -25,20 +25,37 @@ namespace WebApplication2.Data
         {
             base.OnModelCreating(modelBuilder);
 
-           
+            // Configure Employee-Organization relationship (Many-to-One)
             modelBuilder.Entity<Employee>()
-                .HasOne<Organization>()  
-                .WithMany(x=>x.Employees) 
-                .HasForeignKey(e => e.OrganizationId) 
-                .OnDelete(DeleteBehavior.SetNull); 
+                .HasOne(e => e.Organization)
+                .WithMany(o => o.Employees)
+                .HasForeignKey(e => e.OrganizationId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             modelBuilder.Entity<Organization>()
-                .HasKey(x=>x.Id)  ;
-            modelBuilder.Entity<Organization>().HasMany(x=>x.Employees).WithOne(x=>x.Organization).HasForeignKey(x=>x.OrganizationId);
+                .HasKey(o => o.Id); 
+            modelBuilder.Entity<Organization>()
+                .HasMany(x=>x.Employees)
+                .WithOne(x=>x.Organization)
+                .HasForeignKey(x=>x.OrganizationId);
 
+            // Configure Employee-Department relationship (Many-to-One)
             modelBuilder.Entity<Employee>()
-                .HasKey(e => e.Id);
+                .HasOne(e => e.Department)
+                .WithMany(d => d.Employees)
+                .HasForeignKey(e => e.DepartmentId)
+                .OnDelete(DeleteBehavior.SetNull); // Set null on delete, if desired
 
-            modelBuilder.Entity<Department>();
+            modelBuilder.Entity<Department>()
+                .HasKey(d => d.Id); // Primary key for Department
+            
+            
+
+            // Configure reverse relationship (Department has many Employees)
+            modelBuilder.Entity<Department>()
+                .HasMany(d => d.Employees)
+                .WithOne(e => e.Department)
+                .HasForeignKey(e => e.DepartmentId);
         }
     }
 }

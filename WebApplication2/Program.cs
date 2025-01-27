@@ -1,6 +1,7 @@
 using WebApplication2.Data;
 using WebApplication2.Repositories;
 using Microsoft.EntityFrameworkCore;
+using WebApplication2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
