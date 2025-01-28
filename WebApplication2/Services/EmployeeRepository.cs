@@ -8,13 +8,13 @@ namespace WebApplication2.Services
 {
     public class EmployeeRepository : IEmployeeRepository
     {
-        private readonly ApplicationDbContext context;
+        private readonly ApplicationDbContext _context;
 
         public EmployeeRepository(ApplicationDbContext context)
         {
             this.context = context;
         }
-
+      // t
         public async Task<IEnumerable<EmployeeViewModel>> GetAllEmployees()
         {
             var employees = await context.Set<Employee>()

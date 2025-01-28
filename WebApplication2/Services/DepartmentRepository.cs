@@ -3,7 +3,7 @@ using WebApplication2.Data;
 using WebApplication2.Entities;
 using WebApplication2.Models;
 
-namespace WebApplication2.Repositories
+namespace WebApplication2.Services
 {
     public class DepartmentRepository : IDepartmentRepository
     {
@@ -25,7 +25,7 @@ namespace WebApplication2.Repositories
                 })
                 .ToListAsync();
         }
-
+      //  Get Department by id 
         public async Task<DepartmentViewModel> GetDepartmentById(int id)
         {
             var department = await _context.Set<Department>().FirstOrDefaultAsync(d => d.Id == id);

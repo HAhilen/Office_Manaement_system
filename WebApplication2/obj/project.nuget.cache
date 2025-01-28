@@ -1,6 +1,10 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "dgSpecHash": "RtZU15bb7jM=",
+=======
+  "dgSpecHash": "SnZ+EiCuyPI=",
+>>>>>>> 5cd1fd0e24adb9cef1778523e388137b3654bf74
   "success": true,
   "projectFilePath": "C:\\Users\\pc\\Desktop\\New folder (6)\\Office_Manaement_system\\WebApplication2\\WebApplication2.csproj",
   "expectedPackageFiles": [

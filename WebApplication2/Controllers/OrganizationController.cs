@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Models;
-using WebApplication2.Repositories;
+using WebApplication2.Interfaces;
 using WebApplication2.Data;
 
 namespace WebApplication2.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/organization")]
     [ApiController]
     public class OrganizationController : ControllerBase
     {
@@ -17,6 +17,7 @@ namespace WebApplication2.Controllers
         }
 
         // Get all organizations
+        
         [HttpGet]
         public async Task<IActionResult> GetOrganizations()
         {

@@ -1,7 +1,7 @@
 using WebApplication2.Entities;
 using WebApplication2.Models;
 
-namespace  WebApplication2.Repositories
+namespace  WebApplication2.Interfaces
 {
     public interface IOrganizationRepository
     {

@@ -1,10 +1,19 @@
 using WebApplication2.Data;
-using WebApplication2.Repositories;
+using WebApplication2.Interfaces;
 using Microsoft.EntityFrameworkCore;
+
 using WebApplication2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Office Management System Web Api", 
+        Version = "1.0"
+    });
+});
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
