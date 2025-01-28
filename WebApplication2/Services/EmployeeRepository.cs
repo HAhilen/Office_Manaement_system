@@ -8,7 +8,7 @@ namespace WebApplication2.Services
 {
     public class EmployeeRepository : IEmployeeRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext context;
 
         public EmployeeRepository(ApplicationDbContext context)
         {
