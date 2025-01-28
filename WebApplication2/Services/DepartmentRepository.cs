@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using WebApplication2.Data;
 using WebApplication2.Entities;
 using WebApplication2.Models;
-using WebApplication2.Data;
 
 namespace WebApplication2.Repositories
 {
@@ -16,30 +16,32 @@ namespace WebApplication2.Repositories
 
         public async Task<IEnumerable<DepartmentViewModel>> GetAllDepartments()
         {
-            return await _context.Departments
-                .Select(d=> new DepartmentViewModel
+            return await _context.Set<Department>()
+                .Select(d => new DepartmentViewModel
                 {
                     Id = d.Id,
                     DepartmentName = d.DepartmentName,
-                    ManagerId    = d.ManagerId
+                    ManagerId = d.ManagerId
                 })
                 .ToListAsync();
         }
 
         public async Task<DepartmentViewModel> GetDepartmentById(int id)
         {
-            var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == id);
-            return department == null
-                ? null
-                : new DepartmentViewModel
-                {
-                    Id = department.Id,
-                    ManagerId=department.ManagerId,
-                    DepartmentName = department.DepartmentName,
-                };
+            var department = await _context.Set<Department>().FirstOrDefaultAsync(d => d.Id == id);
+            if (department == null)
+            {
+                throw new Exception($"Department with id {id} not found");
+            }
+            return new DepartmentViewModel
+            {
+                Id = department.Id,
+                DepartmentName = department.DepartmentName,
+                ManagerId = department.ManagerId
+            };
         }
 
-        
+
         public async Task<DepartmentViewModel> AddDepartment(DepartmentViewModel departmentViewModel)
         {
             var department = new Department
@@ -49,7 +51,7 @@ namespace WebApplication2.Repositories
                 ManagerId = departmentViewModel.ManagerId
             };
 
-            await _context.Departments.AddAsync(department);
+            await _context.Set<Department>().AddAsync(department);
             await _context.SaveChangesAsync();
 
             return new DepartmentViewModel
@@ -57,14 +59,14 @@ namespace WebApplication2.Repositories
                 Id = department.Id,
                 DepartmentName = department.DepartmentName,
                 ManagerId = department.ManagerId,
-               
+
             };
         }
 
-    // Update operation for department
+        // Update operation for department
         public async Task<bool> UpdateDepartment(DepartmentViewModel departmentViewModel)
         {
-            var existingDepartment = await _context.Departments
+            var existingDepartment = await _context.Set<Department>()
                 .FirstOrDefaultAsync(d => d.Id == departmentViewModel.Id);
 
             if (existingDepartment == null)
@@ -73,21 +75,49 @@ namespace WebApplication2.Repositories
             }
             existingDepartment.DepartmentName = departmentViewModel.DepartmentName ?? existingDepartment.DepartmentName;
             existingDepartment.ManagerId = departmentViewModel.ManagerId ?? existingDepartment.ManagerId;
-            _context.Departments.Update(existingDepartment);
+            _context.Set<Department>().Update(existingDepartment);
             await _context.SaveChangesAsync();
 
             return true;
         }
-    //Delete opetation for Departments
-    
+        //Delete opetation for Departments
+
         public async Task<bool> DeleteDepartment(int id)
         {
-            var department = await _context.Departments.FindAsync(id);
+            var department = await _context.Set<Department>().FindAsync(id);
             if (department == null) return false;
 
-            _context.Departments.Remove(department);
+            _context.Set<Department>().Remove(department);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<DepartmentEmployeeModel> GetDepartmentEmployeeByEmpId(int departmentId)
+        {
+            var depEmp = await _context.Set<Department>().Include(x=>x.Employees).ThenInclude(x=>x.Organization).FirstOrDefaultAsync(x => x.Id == departmentId);
+            if (depEmp == null)
+            {
+                throw new Exception("Not Found");
+            }
+            return new DepartmentEmployeeModel
+            {
+                Department = new DepartmentViewModel
+                {
+                    Id = depEmp.Id,
+                    DepartmentName = depEmp.DepartmentName,
+                    ManagerId = depEmp.ManagerId
+                },
+                Employees = depEmp?.Employees?.Select(e => new EmployeeViewModel
+                {
+                    Id = e.Id,
+                    Name = e.Name,
+                    Email = e.Email,
+                     DepartmentId=e.DepartmentId,
+                      DepartmentName=e.Department?.DepartmentName,
+                       OrganizationId=e.OrganizationId,
+                        OrganizationName= e.Organization?.OrganizationName
+                }).ToList()
+            };
         }
     }
 }

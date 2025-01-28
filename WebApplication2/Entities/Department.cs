@@ -8,5 +8,5 @@ public class Department
     
     public int? ManagerId { get; set; }
     
-    public virtual ICollection<Employee> Employees { get; set; }  
+    public virtual ICollection<Employee>? Employees { get; set; }  
 }

@@ -4,7 +4,7 @@ using WebApplication2.Repositories;
 
 namespace WebApplication2.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/department")]
     [ApiController]
     public class DepartmentController : ControllerBase
     {
@@ -41,6 +41,12 @@ namespace WebApplication2.Controllers
         {
             var isDeleted = await _departmentRepository.DeleteDepartment(id);
             return isDeleted ? NoContent() : NotFound();
+        }
+
+        [HttpGet("employee/{departmentId}")]
+        public async Task<ActionResult<DepartmentEmployeeModel>> Get(int departmentId)
+        {
+            return Ok(await _departmentRepository.GetDepartmentEmployeeByEmpId(departmentId));
         }
     }
 }

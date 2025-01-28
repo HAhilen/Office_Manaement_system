@@ -7,5 +7,7 @@ public interface IDepartmentRepository
     Task<DepartmentViewModel> GetDepartmentById(int id);
     Task<DepartmentViewModel> AddDepartment(DepartmentViewModel departmentViewModel); 
     Task<bool> UpdateDepartment(DepartmentViewModel departmentViewModel);   
-    Task<bool> DeleteDepartment(int id);   
+    Task<bool> DeleteDepartment(int id);
+
+    Task<DepartmentEmployeeModel> GetDepartmentEmployeeByEmpId(int departmentId);
 }

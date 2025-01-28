@@ -1,23 +1,41 @@
 using Microsoft.EntityFrameworkCore;
-using WebApplication2.Entities;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Npgsql;
+using System.Reflection;
+
 
 namespace WebApplication2.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+
+        private readonly string _connectionString;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options)
         {
+            var builder = new NpgsqlConnectionStringBuilder
+            {
+                Host = configuration.GetSection("DbConfig:Host").Value,
+                Port = configuration.GetSection("DbConfig:Port").Value?.ToInt() ?? 5432,
+                Database = configuration.GetSection("DbConfig:Database").Value,
+                Username = configuration.GetSection("DbConfig:UserName").Value ?? "postgres",
+                Password = configuration.GetSection("DbConfig:Password").Value ?? "123456789",
+                IncludeErrorDetail = true,
+                ApplicationName = "OfficeManagementSystem"
+            };
+
+            _connectionString = builder.ConnectionString;
         }
 
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<Organization> Organizations { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseLazyLoadingProxies();
+                optionsBuilder
+                    .UseNpgsql(_connectionString)
+                    .UseSnakeCaseNamingConvention()
+                    .UseLazyLoadingProxies()
+                    .ConfigureWarnings(w => w.Ignore(CoreEventId.DetachedLazyLoadingWarning));
             }
         }
 
@@ -25,37 +43,12 @@ namespace WebApplication2.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure Employee-Organization relationship (Many-to-One)
-            modelBuilder.Entity<Employee>()
-                .HasOne(e => e.Organization)
-                .WithMany(o => o.Employees)
-                .HasForeignKey(e => e.OrganizationId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            modelBuilder.Entity<Organization>()
-                .HasKey(o => o.Id); 
-            modelBuilder.Entity<Organization>()
-                .HasMany(x=>x.Employees)
-                .WithOne(x=>x.Organization)
-                .HasForeignKey(x=>x.OrganizationId);
-
-            // Configure Employee-Department relationship (Many-to-One)
-            modelBuilder.Entity<Employee>()
-                .HasOne(e => e.Department)
-                .WithMany(d => d.Employees)
-                .HasForeignKey(e => e.DepartmentId)
-                .OnDelete(DeleteBehavior.SetNull); // Set null on delete, if desired
-
-            modelBuilder.Entity<Department>()
-                .HasKey(d => d.Id); // Primary key for Department
-            
-            
-
-            // Configure reverse relationship (Department has many Employees)
-            modelBuilder.Entity<Department>()
-                .HasMany(d => d.Employees)
-                .WithOne(e => e.Department)
-                .HasForeignKey(e => e.DepartmentId);
+            modelBuilder.ApplyAllConfigurations(Assembly.GetExecutingAssembly());
         }
+
+
+
     }
+
+
 }
