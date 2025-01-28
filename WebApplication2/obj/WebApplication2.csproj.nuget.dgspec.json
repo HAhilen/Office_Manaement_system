@@ -1,28 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\pc\\Desktop\\New folder (6)\\Office_Manaement_system\\WebApplication2\\WebApplication2.csproj": {}
+    "/Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/WebApplication2.csproj": {}
   },
   "projects": {
-    "C:\\Users\\pc\\Desktop\\New folder (6)\\Office_Manaement_system\\WebApplication2\\WebApplication2.csproj": {
+    "/Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/WebApplication2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\pc\\Desktop\\New folder (6)\\Office_Manaement_system\\WebApplication2\\WebApplication2.csproj",
+        "projectUniqueName": "/Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/WebApplication2.csproj",
         "projectName": "WebApplication2",
-        "projectPath": "C:\\Users\\pc\\Desktop\\New folder (6)\\Office_Manaement_system\\WebApplication2\\WebApplication2.csproj",
-        "packagesPath": "C:\\Users\\pc\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\pc\\Desktop\\New folder (6)\\Office_Manaement_system\\WebApplication2\\obj\\",
+        "projectPath": "/Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/WebApplication2.csproj",
+        "packagesPath": "/Users/Hil3n/.nuget/packages/",
+        "outputPath": "/Users/Hil3n/RiderProjects/WebApplication2/WebApplication2/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\pc\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/Hil3n/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
+          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -100,7 +98,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

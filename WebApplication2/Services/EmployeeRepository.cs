@@ -2,10 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
 using WebApplication2.Entities;
 using WebApplication2.Models;
-using WebApplication2.Repositories;
+using WebApplication2.Interfaces;
 
 namespace WebApplication2.Services
 {
+    
     public class EmployeeRepository : IEmployeeRepository
     {
         private readonly ApplicationDbContext context;
