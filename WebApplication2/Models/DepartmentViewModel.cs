@@ -1,3 +1,5 @@
+using WebApplication2.Entities;
+
 namespace WebApplication2.Models;
 
 public class DepartmentViewModel
@@ -11,4 +13,11 @@ public class DepartmentEmployeeModel
 {
     public DepartmentViewModel? Department { get; set; }
     public IEnumerable<EmployeeViewModel>? Employees { get; set; }
+}
+
+
+public class DepartmentManagerModel
+{
+    public DepartmentViewModel? Department { get; set; }
+    public IEnumerable<ManagerViewModel>? Managers { get; set; }
 }

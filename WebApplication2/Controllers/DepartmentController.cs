@@ -48,5 +48,10 @@ namespace WebApplication2.Controllers
         {
             return Ok(await _departmentRepository.GetDepartmentEmployeeByDepId(departmentId));
         }
+        [HttpGet("manager/{departmentId}")]
+        public async Task<ActionResult<DepartmentEmployeeModel>> GetManagers(int departmentId)
+        {
+            return Ok(await _departmentRepository.GetDepartmentWithManager(departmentId));
+        }
     }
 }

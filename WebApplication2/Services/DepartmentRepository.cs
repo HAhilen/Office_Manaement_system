@@ -3,6 +3,7 @@ using WebApplication2.Data;
 using WebApplication2.Entities;
 using WebApplication2.Models;
 
+
 namespace WebApplication2.Services
 {
     public class DepartmentRepository : IDepartmentRepository
@@ -120,5 +121,41 @@ namespace WebApplication2.Services
                 }).ToList()
             };
         }
+        // Return all managers with corresponding department
+        public async Task<DepartmentManagerModel> GetDepartmentWithManager(int departmentId)
+        {
+            var depMan = await _context.Set<Department>()
+                .Include(x => x.Manager) 
+                .FirstOrDefaultAsync(x => x.Id == departmentId);
+
+            if (depMan == null)
+            {
+                throw new Exception("Not Found");
+            }
+
+            return new DepartmentManagerModel
+            {
+                Department = new DepartmentViewModel
+                {
+                    Id = depMan.Id
+                },
+                Managers = depMan.Manager != null
+                    ? new List<ManagerViewModel>
+                    {
+                        new ManagerViewModel
+                        {
+                            Id = depMan.Manager.Id,
+                            Name = depMan.Manager.Name,
+                            Email = depMan.Manager.Email,
+                            PhoneNumber = depMan.Manager.PhoneNumber,
+                            Address = depMan.Manager.Address,
+                            DepartmentNames = depMan.Manager.Departments.Select(x => x.DepartmentName).ToList()
+                            
+                        } 
+                    }
+                    : new List<ManagerViewModel>()
+            };
+        }
+
     }
 }
