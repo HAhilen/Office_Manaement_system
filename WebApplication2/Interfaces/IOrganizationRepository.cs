@@ -10,5 +10,6 @@ namespace  WebApplication2.Interfaces
         Task<int>AddOrganization(OrganizationViewModel organizationViewModel);
         Task<bool> UpdateOrganization(OrganizationViewModel organizationViewModel);
         Task<bool> DeleteOrganization(int id);
+        Task<OrganizationManagerModel> GetOrganizationWithManager(int organizationId);
     }
 }

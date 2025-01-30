@@ -4,7 +4,8 @@ using WebApplication2.Entities;
 using WebApplication2.Models;
 
 
-namespace WebApplication2.Interfaces
+
+namespace WebApplication2.Interfaces  
 {
     public class OrganizationRepository : IOrganizationRepository
     {
@@ -99,6 +100,44 @@ namespace WebApplication2.Interfaces
             await _context.SaveChangesAsync();
 
             return true;
+        }
+        //  Fetch the organization along with its managers
+        
+        public async Task<OrganizationManagerModel> GetOrganizationWithManager(int organizationId)
+        {
+            var orgMan = await _context.Set<Organization>()
+                .Where(x => x.Id == organizationId)
+                .Select(org => new OrganizationManagerModel
+                {
+                    Organization = new OrganizationViewModel
+                    {
+                        Id = org.Id,
+                        OrganizationName = org.OrganizationName,
+                        Address = org.Address,
+                        PhoneNumber = org.PhoneNumber,
+                        Email = org.Email,
+                        Website = org.Website
+                    },
+                    Managers = org.Managers != null
+                        ? org.Managers.Select(manager => new ManagerViewModel
+                        {
+                            Id = manager.Id,
+                            Name = manager.Name,
+                            Email = manager.Email,
+                            PhoneNumber = manager.PhoneNumber,
+                            Address = manager.Address,
+                            DepartmentNames = manager.Departments.Select(d => d.DepartmentName).ToList()
+                        }).ToList()
+                        : new List<ManagerViewModel>()
+                })
+                .FirstOrDefaultAsync();
+
+            if (orgMan == null)
+            {
+                throw new Exception("Not Found");
+            }
+
+            return orgMan;
         }
     }
 }

@@ -20,6 +20,13 @@ public class DepartmentEmployeeModel
 
 public class DepartmentManagerModel
 {
-    public DepartmentViewModel? Department { get; set; }
+    public DepartmentIdViewModel? Department { get; set; }
     public IEnumerable<ManagerViewModel>? Managers { get; set; }
+    
+}
+
+
+public class DepartmentIdViewModel
+{
+    public int Id { get; set; }
 }
