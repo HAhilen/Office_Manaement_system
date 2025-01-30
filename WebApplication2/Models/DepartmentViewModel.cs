@@ -11,6 +11,4 @@ public class DepartmentEmployeeModel
 {
     public DepartmentViewModel? Department { get; set; }
     public IEnumerable<EmployeeViewModel>? Employees { get; set; }
-
-
 }

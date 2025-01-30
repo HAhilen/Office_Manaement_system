@@ -9,6 +9,8 @@ namespace WebApplication2.Configurations
     {
         public void Configure(EntityTypeBuilder<Organization> builder)
         {
+            // // One-to-many relationship between Organization and Employee
+            
             builder.ToTable("organization", "public");           
             builder.HasKey(o => o.Id);
             builder.HasMany(x => x.Employees)

@@ -45,9 +45,6 @@ namespace WebApplication2.Data
 
             modelBuilder.ApplyAllConfigurations(Assembly.GetExecutingAssembly());
         }
-
-
-
     }
 
 

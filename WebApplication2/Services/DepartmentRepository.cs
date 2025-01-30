@@ -22,6 +22,7 @@ namespace WebApplication2.Services
                     Id = d.Id,
                     DepartmentName = d.DepartmentName,
                     ManagerId = d.ManagerId
+                    
                 })
                 .ToListAsync();
         }
@@ -91,8 +92,8 @@ namespace WebApplication2.Services
             await _context.SaveChangesAsync();
             return true;
         }
-
-        public async Task<DepartmentEmployeeModel> GetDepartmentEmployeeByEmpId(int departmentId)
+        //Return all employeee with corresponding department
+        public async Task<DepartmentEmployeeModel> GetDepartmentEmployeeByDepId(int departmentId)
         {
             var depEmp = await _context.Set<Department>().Include(x=>x.Employees).ThenInclude(x=>x.Organization).FirstOrDefaultAsync(x => x.Id == departmentId);
             if (depEmp == null)

@@ -10,9 +10,11 @@ namespace WebApplication2.Configurations
         {
             builder.ToTable("employee", "public");
            
-
+                // Many-to-one relationship between Employee and Organization
             builder.HasOne(x => x.Organization).WithMany(x => x.Employees).HasForeignKey(x => x.OrganizationId).OnDelete(DeleteBehavior.SetNull);
-
+            
+            
+            // Many-to-one relationship between Employee and Department
             builder.HasOne(x => x.Department).WithMany(x => x.Employees).HasForeignKey(x => x.DepartmentId)
                .OnDelete(DeleteBehavior.SetNull);
         }

@@ -8,5 +8,5 @@ public interface IDepartmentRepository
     Task<bool> UpdateDepartment(DepartmentViewModel departmentViewModel);   
     Task<bool> DeleteDepartment(int id);
 
-    Task<DepartmentEmployeeModel> GetDepartmentEmployeeByEmpId(int departmentId);
+    Task<DepartmentEmployeeModel> GetDepartmentEmployeeByDepId(int departmentId);
 }

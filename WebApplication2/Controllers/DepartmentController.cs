@@ -46,7 +46,7 @@ namespace WebApplication2.Controllers
         [HttpGet("employee/{departmentId}")]
         public async Task<ActionResult<DepartmentEmployeeModel>> Get(int departmentId)
         {
-            return Ok(await _departmentRepository.GetDepartmentEmployeeByEmpId(departmentId));
+            return Ok(await _departmentRepository.GetDepartmentEmployeeByDepId(departmentId));
         }
     }
 }
