@@ -10,9 +10,5 @@ namespace WebApplication2.Models
         public string Country { get; set; } = string.Empty;
 
     }
-    public class OrganizationManagerModel
-    {
-        public OrganizationViewModel? Organization { get; set; }
-        public IEnumerable<ManagerViewModel>? Managers { get; set; }
-    }
+    
 }

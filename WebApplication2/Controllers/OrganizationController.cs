@@ -62,11 +62,6 @@ namespace WebApplication2.Controllers
             var deleted = await _organizationRepository.DeleteOrganization(id);
             return deleted ? NoContent() : NotFound();
         }
-        //get Organization with All corresponding manager
-        [HttpGet("manager/{organizationId}")]
-        public async Task<IActionResult> GetManagersWithOrg(int organizationId)
-        {
-            return Ok(await _organizationRepository.GetOrganizationWithManager(organizationId));
-        }
+        
     }
 }
