@@ -6,7 +6,7 @@ public class DepartmentViewModel
 {
     public int Id { get; set; }
     public int OrganizationId { get; set; }
-    public string DepartmentName { get; set; } = string.Empty;
+    public string? DepartmentName { get; set; } = "";
 
 
 }

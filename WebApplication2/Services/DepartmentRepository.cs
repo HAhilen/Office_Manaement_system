@@ -23,6 +23,9 @@ namespace WebApplication2.Services
                     Id = d.Id,
                     DepartmentName = d.DepartmentName,
                     OrganizationId = d.OrganizationId,
+                     
+                     
+         
 
                 })
                 .ToListAsync();
