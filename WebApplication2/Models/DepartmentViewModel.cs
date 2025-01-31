@@ -5,8 +5,10 @@ namespace WebApplication2.Models;
 public class DepartmentViewModel
 {
     public int Id { get; set; }
-    public string? DepartmentName { get; set; }
-    public int? ManagerId { get; set; }
+    public int OrganizationId { get; set; }
+    public string DepartmentName { get; set; } = string.Empty;
+
+
 }
 
 public class DepartmentEmployeeModel

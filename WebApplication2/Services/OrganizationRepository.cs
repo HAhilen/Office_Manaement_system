@@ -1,9 +1,7 @@
-using AutoMapper.Execution;
 using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
 using WebApplication2.Entities;
 using WebApplication2.Models;
-using WebApplication2.Interfaces;
 
 
 namespace WebApplication2.Interfaces
@@ -25,10 +23,8 @@ namespace WebApplication2.Interfaces
                 {
                     Id = o.Id,
                     OrganizationName = o.OrganizationName,
-                    Address = o.Address,
-                    PhoneNumber = o.PhoneNumber,
-                    Email = o.Email,
-                    Website = o.Website
+                    Country = o.Country,
+                    EstablishedYear = o.EstablishedYear,
                 })
                 .ToListAsync();
         }
@@ -37,7 +33,7 @@ namespace WebApplication2.Interfaces
         public async Task<OrganizationViewModel> GetOrganizationById(int id)
         {
             var organization = await _context.Set<Organization>().FirstOrDefaultAsync(x => x.Id == id);
-            if(organization == null)
+            if (organization == null)
             {
                 throw new Exception($"Organization with id:{id} is not found");
             }
@@ -45,29 +41,28 @@ namespace WebApplication2.Interfaces
             {
                 Id = organization.Id,
                 OrganizationName = organization.OrganizationName,
-                Address = organization.Address,
-                PhoneNumber = organization.PhoneNumber,
-                Email = organization.Email,
-                Website = organization.Website
-            };         
+                Country = organization.Country,
+                EstablishedYear = organization.EstablishedYear,
+
+            };
         }
 
         // Add a new organization
-        public async Task AddOrganization(OrganizationViewModel organizationViewModel)
+        public async Task<int> AddOrganization(OrganizationViewModel model)
         {
             var organization = new Organization
             {
-                OrganizationName = organizationViewModel.OrganizationName,
-                Address = organizationViewModel.Address,
-                PhoneNumber = organizationViewModel.PhoneNumber,
-                Email = organizationViewModel.Email,
-                Website = organizationViewModel.Website
+                OrganizationName = model.OrganizationName,
+                EstablishedYear = model.EstablishedYear,
+                Country = model.Country,
+
+
             };
 
             await _context.Set<Organization>().AddAsync(organization);
             await _context.SaveChangesAsync();
 
-            organizationViewModel.Id = organization.Id; // Update the ID in the ViewModel
+           return organization.Id;
         }
 
         // Update an existing organization
@@ -80,12 +75,10 @@ namespace WebApplication2.Interfaces
                 return false;
             }
 
-            existingorganization.OrganizationName = organizationViewModel.OrganizationName??existingorganization.OrganizationName;
-            existingorganization.Address = organizationViewModel.Address??existingorganization.Address;
-            existingorganization.PhoneNumber = organizationViewModel.PhoneNumber??existingorganization.PhoneNumber;
-            existingorganization.Email = organizationViewModel.Email??existingorganization.Email;
-            existingorganization.Website = organizationViewModel.Website??existingorganization.Website;
-
+            existingorganization.OrganizationName = organizationViewModel.OrganizationName;
+            existingorganization.EstablishedYear = organizationViewModel.EstablishedYear;
+            existingorganization.Country = organizationViewModel.Country ?? existingorganization.Country;
+          
             _context.Set<Organization>().Update(existingorganization);
             await _context.SaveChangesAsync();
 

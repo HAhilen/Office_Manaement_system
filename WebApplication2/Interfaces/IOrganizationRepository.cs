@@ -7,7 +7,7 @@ namespace  WebApplication2.Interfaces
     {
         Task<IEnumerable<OrganizationViewModel>> GetAllOrganizations();
         Task<OrganizationViewModel> GetOrganizationById(int id);
-        Task AddOrganization(OrganizationViewModel organizationViewModel);
+        Task<int>AddOrganization(OrganizationViewModel organizationViewModel);
         Task<bool> UpdateOrganization(OrganizationViewModel organizationViewModel);
         Task<bool> DeleteOrganization(int id);
     }

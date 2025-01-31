@@ -22,12 +22,12 @@ namespace WebApplication2.Services
                 {
                     Id = d.Id,
                     DepartmentName = d.DepartmentName,
-                    ManagerId = d.ManagerId
-                    
+                    OrganizationId = d.OrganizationId,
+
                 })
                 .ToListAsync();
         }
-      //  Get Department by id 
+        //  Get Department by id 
         public async Task<DepartmentViewModel> GetDepartmentById(int id)
         {
             var department = await _context.Set<Department>().FirstOrDefaultAsync(d => d.Id == id);
@@ -39,7 +39,9 @@ namespace WebApplication2.Services
             {
                 Id = department.Id,
                 DepartmentName = department.DepartmentName,
-                ManagerId = department.ManagerId
+                OrganizationId = department.OrganizationId,
+
+
             };
         }
 
@@ -50,7 +52,8 @@ namespace WebApplication2.Services
             {
                 Id = departmentViewModel.Id,
                 DepartmentName = departmentViewModel.DepartmentName,
-                ManagerId = departmentViewModel.ManagerId
+                OrganizationId = departmentViewModel.OrganizationId,
+
             };
 
             await _context.Set<Department>().AddAsync(department);
@@ -60,7 +63,8 @@ namespace WebApplication2.Services
             {
                 Id = department.Id,
                 DepartmentName = department.DepartmentName,
-                ManagerId = department.ManagerId,
+                OrganizationId = department.OrganizationId,
+
 
             };
         }
@@ -76,7 +80,7 @@ namespace WebApplication2.Services
                 return false;
             }
             existingDepartment.DepartmentName = departmentViewModel.DepartmentName ?? existingDepartment.DepartmentName;
-            existingDepartment.ManagerId = departmentViewModel.ManagerId ?? existingDepartment.ManagerId;
+
             _context.Set<Department>().Update(existingDepartment);
             await _context.SaveChangesAsync();
 
@@ -96,7 +100,7 @@ namespace WebApplication2.Services
         //Return all employeee with corresponding department
         public async Task<DepartmentEmployeeModel> GetDepartmentEmployeeByDepId(int departmentId)
         {
-            var depEmp = await _context.Set<Department>().Include(x=>x.Employees).ThenInclude(x=>x.Organization).FirstOrDefaultAsync(x => x.Id == departmentId);
+            var depEmp = await _context.Set<Department>().Include(x=>x.Employees).FirstOrDefaultAsync(x => x.Id == departmentId);
             if (depEmp == null)
             {
                 throw new Exception("Not Found");
@@ -107,55 +111,25 @@ namespace WebApplication2.Services
                 {
                     Id = depEmp.Id,
                     DepartmentName = depEmp.DepartmentName,
-                    ManagerId = depEmp.ManagerId
+                     OrganizationId = depEmp.OrganizationId,
+
                 },
                 Employees = depEmp?.Employees?.Select(e => new EmployeeViewModel
                 {
                     Id = e.Id,
-                    Name = e.Name,
+                    Salary = e.Salary,
+                    EmployeeName = e.EmployeeName,
+                    HireDate = e.HireDate,
+                    JobTitle = e.JobTitle,
+                    PhoneNumber = e.PhoneNumber,
                     Email = e.Email,
-                     DepartmentId=e.DepartmentId,
-                      DepartmentName=e.Department?.DepartmentName,
-                       OrganizationId=e.OrganizationId,
-                        OrganizationName= e.Organization?.OrganizationName
+                    DepartmentId = e.DepartmentId,
+                    ManagerId = e.ManagerId,
+
                 }).ToList()
             };
         }
-        // Return all managers with corresponding department
-        public async Task<DepartmentManagerModel> GetDepartmentWithManager(int departmentId)
-        {
-            var depMan = await _context.Set<Department>()
-                .Include(x => x.Manager) 
-                .FirstOrDefaultAsync(x => x.Id == departmentId);
-
-            if (depMan == null)
-            {
-                throw new Exception("Not Found");
-            }
-
-            return new DepartmentManagerModel
-            {
-                Department = new DepartmentViewModel
-                {
-                    Id = depMan.Id
-                },
-                Managers = depMan.Manager != null
-                    ? new List<ManagerViewModel>
-                    {
-                        new ManagerViewModel
-                        {
-                            Id = depMan.Manager.Id,
-                            Name = depMan.Manager.Name,
-                            Email = depMan.Manager.Email,
-                            PhoneNumber = depMan.Manager.PhoneNumber,
-                            Address = depMan.Manager.Address,
-                            DepartmentNames = depMan.Manager.Departments.Select(x => x.DepartmentName).ToList()
-                            
-                        } 
-                    }
-                    : new List<ManagerViewModel>()
-            };
-        }
+      
 
     }
 }

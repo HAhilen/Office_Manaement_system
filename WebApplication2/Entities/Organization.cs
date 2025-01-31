@@ -2,14 +2,14 @@ namespace WebApplication2.Entities
 {
     public class Organization
     {
-        public int Id { get; set; }  // primary key
-        public string? OrganizationName { get; set; }
-        public string? Address { get; set; } 
-        public string? PhoneNumber { get; set; }
-        public string? Email { get; set; }
-        public string? Website { get; set; }
+        public int Id { get; set; }
+        public string OrganizationName { get; set; } = string.Empty;
+        public int EstablishedYear { get; set; }
+        public string Country { get; set; } = string.Empty;
+        // One-to-many relationship with Department
+        public virtual ICollection<Department> Departments { get; set; } = null!;
 
-     public virtual ICollection<Employee>? Employees { get; set; }  
-     public virtual ICollection<Manager>? Managers { get; set; }
+        // Reverse relationship with Employee
     }
+
 }

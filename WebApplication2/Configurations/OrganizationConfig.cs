@@ -9,13 +9,20 @@ namespace WebApplication2.Configurations
     {
         public void Configure(EntityTypeBuilder<Organization> builder)
         {
-            // // One-to-many relationship between Organization and Employee
-            
-            builder.ToTable("organization", "public");           
+            builder.ToTable("organization", "hr_management");
+
             builder.HasKey(o => o.Id);
-            builder.HasMany(x => x.Employees)
-                .WithOne(x => x.Organization)
-                .HasForeignKey(x => x.OrganizationId);
+
+            // One-to-many relationship between Organization and Department
+            builder.HasMany(o => o.Departments)
+                .WithOne(d => d.Organization)
+                .HasForeignKey(d => d.OrganizationId);
+
+
+            
+         
         }
     }
+
+
 }

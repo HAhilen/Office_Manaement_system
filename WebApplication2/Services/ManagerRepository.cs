@@ -1,13 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
 using WebApplication2.Entities;
-using WebApplication2.Models;
 using WebApplication2.Interfaces;
-using Department = WebApplication2.Migrations.Department;
+using WebApplication2.Models;
 
 namespace WebApplication2.Services
 {
-    
+
     public class ManagerRepository : IManagerRepository
     {
         private readonly ApplicationDbContext context;
@@ -16,19 +15,19 @@ namespace WebApplication2.Services
         {
             this.context = context;
         }
-      
+
         public async Task<IEnumerable<ManagerViewModel>> GetAllManagers()
         {
             var managers = await context.Set<Manager>()
                 .Select(m => new ManagerViewModel
                 {
                     Id = m.Id,
-                    Name = m.Name,
+                    ManagerName = m.ManagerName,
                     Email = m.Email,
                     PhoneNumber = m.PhoneNumber,
-                    Address = m.Address,
-                    DepartmentNames = m.Departments.Select(d => d.DepartmentName).ToList(),
-                    
+                    DepartmentId = m.DepartmentId,
+                    HireDate = m.HireDate,
+
 
                 })
                 .ToListAsync();
@@ -45,11 +44,12 @@ namespace WebApplication2.Services
             return new ManagerViewModel
             {
                 Id = manager.Id,
-                Name = manager.Name,
+                ManagerName = manager.ManagerName,
                 Email = manager.Email,
-                Address = manager.Address,
                 PhoneNumber = manager.PhoneNumber,
-               
+                HireDate = manager.HireDate,
+                DepartmentId = manager.DepartmentId,
+
             };
         }
 
@@ -57,10 +57,12 @@ namespace WebApplication2.Services
         {
             var manager = new Manager
             {
-                Name = managerViewModel.Name,
+                ManagerName = managerViewModel.ManagerName,
                 Email = managerViewModel.Email,
-                 PhoneNumber = managerViewModel.PhoneNumber,
-                Address = managerViewModel.Address
+                PhoneNumber = managerViewModel.PhoneNumber,
+                HireDate = managerViewModel.HireDate,
+                DepartmentId = managerViewModel.DepartmentId,
+
             };
 
             await context.Set<Manager>().AddAsync(manager);
@@ -69,10 +71,9 @@ namespace WebApplication2.Services
             return new ManagerViewModel
             {
                 Id = manager.Id,
-                Name = manager.Name,
+                ManagerName = manager.ManagerName,
                 Email = manager.Email,
-                 PhoneNumber = manager.PhoneNumber,
-                 Address = manager.Address
+                PhoneNumber = manager.PhoneNumber,
             };
         }
 
@@ -86,10 +87,12 @@ namespace WebApplication2.Services
             {
                 return false;
             }
-            existingManager.Name = managerViewModel.Name ?? managerViewModel.Name;
+            existingManager.ManagerName = managerViewModel.ManagerName ?? managerViewModel.ManagerName;
             existingManager.Email = managerViewModel.Email ?? managerViewModel.Email;
-             existingManager.Address = managerViewModel.Address ?? existingManager.Address;
-             existingManager.PhoneNumber = managerViewModel.PhoneNumber ?? managerViewModel.PhoneNumber;
+            existingManager.PhoneNumber = managerViewModel.PhoneNumber ?? managerViewModel.PhoneNumber;
+            existingManager.HireDate = managerViewModel.HireDate;
+            existingManager.DepartmentId = managerViewModel.DepartmentId;
+
             await context.SaveChangesAsync();
             return true;
         }

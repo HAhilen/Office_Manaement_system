@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
 using WebApplication2.Entities;
-using WebApplication2.Models;
 using WebApplication2.Interfaces;
+using WebApplication2.Models;
 
 namespace WebApplication2.Services
 {
-    
+
     public class EmployeeRepository : IEmployeeRepository
     {
         private readonly ApplicationDbContext context;
@@ -15,20 +15,21 @@ namespace WebApplication2.Services
         {
             this.context = context;
         }
-      // t
+
         public async Task<IEnumerable<EmployeeViewModel>> GetAllEmployees()
         {
             var employees = await context.Set<Employee>()
                 .Select(e => new EmployeeViewModel
                 {
                     Id = e.Id,
-                    Name = e.Name,
+                    HireDate = e.HireDate,
+                    EmployeeName = e.EmployeeName,
+                    Salary = e.Salary,
                     Email = e.Email,
-                    OrganizationId = e.OrganizationId,
-                    OrganizationName = e.Organization.OrganizationName ?? "",
-                    DepartmentId = e.Department.Id,
-                    DepartmentName = e.Department.DepartmentName ?? "",
-
+                    DepartmentId = e.DepartmentId,
+                    JobTitle = e.JobTitle,
+                    PhoneNumber = e.PhoneNumber,
+                    ManagerId = e.ManagerId,
 
                 })
                 .ToListAsync();
@@ -45,10 +46,15 @@ namespace WebApplication2.Services
             return new EmployeeViewModel
             {
                 Id = employee.Id,
-                Name = employee.Name,
+                EmployeeName = employee.EmployeeName,
                 Email = employee.Email,
-                OrganizationId = employee.OrganizationId,
-                DepartmentId = employee.DepartmentId
+                DepartmentId = employee.DepartmentId,
+                HireDate = employee.HireDate,
+                JobTitle = employee.JobTitle,
+                PhoneNumber = employee.PhoneNumber,
+                ManagerId = employee.ManagerId,
+                Salary = employee.Salary,
+
             };
         }
 
@@ -56,10 +62,16 @@ namespace WebApplication2.Services
         {
             var employee = new Employee
             {
-                Name = employeeViewModel.Name,
+                EmployeeName = employeeViewModel.EmployeeName,
                 Email = employeeViewModel.Email,
-                OrganizationId = employeeViewModel.OrganizationId,
-                DepartmentId = employeeViewModel.DepartmentId
+                 HireDate = employeeViewModel.HireDate,
+                 DepartmentId = employeeViewModel.DepartmentId, 
+                 JobTitle = employeeViewModel.JobTitle, 
+                 PhoneNumber = employeeViewModel.PhoneNumber,   
+                 ManagerId = employeeViewModel.ManagerId,   
+                 Salary = employeeViewModel.Salary, 
+                  
+
             };
 
             await context.Set<Employee>().AddAsync(employee);
@@ -68,10 +80,14 @@ namespace WebApplication2.Services
             return new EmployeeViewModel
             {
                 Id = employee.Id,
-                Name = employee.Name,
+                EmployeeName = employee.EmployeeName,
                 Email = employee.Email,
-                OrganizationId = employee.OrganizationId,
-                DepartmentId = employee.DepartmentId
+                DepartmentId = employee.DepartmentId,
+                Salary = employee.Salary,
+                HireDate = employee.HireDate,
+                JobTitle = employee.JobTitle,
+                PhoneNumber = employee.PhoneNumber,
+                ManagerId = employee.ManagerId
             };
         }
 
@@ -85,10 +101,16 @@ namespace WebApplication2.Services
             {
                 return false;
             }
-            existingEmployee.Name = employeeViewModel.Name ?? existingEmployee.Name;
-            existingEmployee.Email = employeeViewModel.Email ?? existingEmployee.Email;
-            existingEmployee.OrganizationId = employeeViewModel.OrganizationId ?? existingEmployee.OrganizationId;
-            existingEmployee.DepartmentId = employeeViewModel.DepartmentId ?? existingEmployee.DepartmentId;
+            existingEmployee.EmployeeName = employeeViewModel.EmployeeName;
+            existingEmployee.Email = employeeViewModel.Email;
+            existingEmployee.DepartmentId = employeeViewModel.DepartmentId;
+            existingEmployee.Salary = employeeViewModel.Salary;
+            existingEmployee.HireDate = employeeViewModel.HireDate;
+            existingEmployee.JobTitle = employeeViewModel.JobTitle;
+            existingEmployee.PhoneNumber = employeeViewModel.PhoneNumber;
+            existingEmployee.ManagerId = employeeViewModel.ManagerId;
+
+
             context.Set<Employee>().Update(existingEmployee);
             await context.SaveChangesAsync();
             return true;
